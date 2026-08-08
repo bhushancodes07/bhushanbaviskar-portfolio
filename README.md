@@ -47,7 +47,7 @@ A modern, responsive personal portfolio website showcasing my skills, projects, 
 1. Clone the repository
 
 ```bash
-git clone https://github.com/bhushancodes07/your-repo-name.git
+git clone https://github.com/bhushancodes07/bhushanbaviskar-portfolio.git
 ```
 
 2. Open `index.html` in your browser — no build step required.

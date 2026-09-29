@@ -8,7 +8,7 @@
 
 A modern, responsive personal portfolio website showcasing my skills, projects, and journey as a developer. Built entirely from scratch with a focus on clean design, smooth animations, and a fully functional contact system.
 
-🔗 **Live Demo:** [your-live-link-here]
+🔗 **Live Demo:** https://bhushancodes07.github.io/bhushanbaviskar-portfolio/
 
 ## ✨ Features
 

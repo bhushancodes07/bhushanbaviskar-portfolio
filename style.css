@@ -1153,3 +1153,47 @@ footer {
     color: #d0d0d0;
     font-size: 0.95rem;
 }
+/* ================= PROJECTS: EQUAL HEIGHT + RESPONSIVE ================= */
+
+.project-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.project-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.project-buttons {
+    margin-top: auto;
+}
+
+@media(max-width:900px) {
+
+    .projects-section,
+    .education-section {
+        width: 90%;
+    }
+
+    .projects-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width:600px) {
+
+    .projects-section,
+    .education-section {
+        padding: 60px 0;
+    }
+
+    .project-image {
+        height: 180px;
+    }
+
+    .project-content {
+        padding: 20px;
+    }
+}

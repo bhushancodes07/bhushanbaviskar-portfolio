@@ -23,6 +23,10 @@
 
 <body>
 
+    <!-- Scroll progress bar + cursor glow -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <div class="cursor-glow" id="cursorGlow"></div>
+
     <!-- ================= NAVBAR ================= -->
 
     <header>
@@ -33,7 +37,15 @@
                 Bhushan's Portfolio
             </div>
 
-            <div class="right">
+            <!-- Hamburger button (mobile) -->
+            <button class="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false"
+                aria-controls="navLinks">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="right" id="navLinks">
 
                 <ul>
 
@@ -937,6 +949,166 @@
             });
 
         });
+
+    </script>
+
+    <!-- ================= UI ENHANCEMENTS ================= -->
+
+    <script>
+
+        (function () {
+
+            const nav = document.querySelector('nav');
+            const toggle = document.querySelector('.menu-toggle');
+            const links = document.querySelectorAll('nav ul li a');
+            const progress = document.getElementById('scrollProgress');
+            const glow = document.getElementById('cursorGlow');
+
+
+            /* ---------- Mobile menu ---------- */
+
+            function closeMenu() {
+                nav.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+
+            toggle.addEventListener('click', function () {
+                const isOpen = nav.classList.toggle('open');
+                toggle.setAttribute('aria-expanded', String(isOpen));
+            });
+
+            links.forEach(function (a) {
+                a.addEventListener('click', closeMenu);
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!nav.contains(e.target)) closeMenu();
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeMenu();
+            });
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 800) closeMenu();
+            });
+
+
+            /* ---------- Scroll progress + active nav link ---------- */
+
+            const pairs = Array.from(links).map(function (a) {
+                return { link: a, section: document.querySelector(a.getAttribute('href')) };
+            }).filter(function (p) { return p.section; });
+
+            let ticking = false;
+
+            function update() {
+
+                const doc = document.documentElement;
+                const max = doc.scrollHeight - doc.clientHeight;
+                const ratio = max > 0 ? window.scrollY / max : 0;
+
+                progress.style.transform = 'scaleX(' + Math.min(Math.max(ratio, 0), 1) + ')';
+
+                let current = pairs[0];
+
+                pairs.forEach(function (p) {
+                    if (p.section.getBoundingClientRect().top <= 140) current = p;
+                });
+
+                if (window.innerHeight + window.scrollY >= doc.scrollHeight - 4) {
+                    current = pairs[pairs.length - 1];
+                }
+
+                pairs.forEach(function (p) {
+                    p.link.classList.toggle('active', p === current);
+                });
+
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', function () {
+                if (!ticking) {
+                    ticking = true;
+                    requestAnimationFrame(update);
+                }
+            }, { passive: true });
+
+            window.addEventListener('resize', update);
+            update();
+
+
+            /* ---------- Cursor glow (mouse devices only) ---------- */
+
+            if (glow && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+
+                let x = 0, y = 0, frame = null;
+
+                window.addEventListener('mousemove', function (e) {
+
+                    x = e.clientX;
+                    y = e.clientY;
+                    glow.classList.add('active');
+
+                    if (!frame) {
+                        frame = requestAnimationFrame(function () {
+                            glow.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
+                            frame = null;
+                        });
+                    }
+                });
+
+                document.addEventListener('mouseleave', function () {
+                    glow.classList.remove('active');
+                });
+            }
+
+
+            /* ---------- Scroll reveal ---------- */
+
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            if ('IntersectionObserver' in window && !reduceMotion) {
+
+                const targets = document.querySelectorAll(
+                    '.leftSection, .rightSection, section .text-gray, section h1, ' +
+                    '.about-image, .about-content, .skill-category, .project-card, ' +
+                    '.timeline-item, .contact-left, .contact-right, .footer > div'
+                );
+
+                const counts = new Map();
+
+                const observer = new IntersectionObserver(function (entries) {
+
+                    entries.forEach(function (entry) {
+
+                        if (!entry.isIntersecting) return;
+
+                        const el = entry.target;
+                        el.classList.add('is-visible');
+                        observer.unobserve(el);
+
+                        // Remove helper classes afterwards so hover effects keep working normally
+                        setTimeout(function () {
+                            el.classList.remove('reveal', 'is-visible');
+                        }, 1300);
+                    });
+
+                }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+                targets.forEach(function (el) {
+
+                    const parent = el.parentElement;
+                    const index = counts.get(parent) || 0;
+                    counts.set(parent, index + 1);
+
+                    el.style.setProperty('--delay', (Math.min(index, 4) * 0.1) + 's');
+                    el.classList.add('reveal');
+                    observer.observe(el);
+                });
+            }
+
+        })();
 
     </script>
 
